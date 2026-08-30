@@ -1,0 +1,65 @@
+# 服务端口
+server:
+  port: 8080
+
+# Spring基础配置
+spring:
+  application:
+    name: eleven-track
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://119.45.21.146:3306/eleven-track?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: track@2026
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.eleven.track.entity
+  configuration:
+    # 开启下划线转驼峰
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+cors:
+  # 只允许你的网站域名
+  allowed-origin: http://localhost:3000
+# Sa-Token 认证配置（单机内存模式）
+sa-token:
+  # 请求头中token字段名称
+  token-name: Authorization
+  # token 前缀
+  token-prefix: Bearer
+  # token有效期，单位：秒  30天
+  timeout: 2592000
+  # 闲置多久无操作自动过期 7天
+  active-timeout: 604800
+  # 是否允许同一账号多地同时登录
+  is-concurrent: true
+  # 登录时挤掉之前登录的会话
+  is-share: false
+  # token风格：uuid、simple-uuid、random-32、random-64、jwt
+  token-style: uuid
+  # 开启注解鉴权
+  is-enable-annotations: true
+  # 关闭cookie写入（前后端分离必须关闭）
+  is-read-cookie: false
+  # 打印日志
+  is-log: false
+
+task:
+  cron: 0 0 0 * * ?
+
+logging:
+  level:
+    root: info
+    org.springframework: warn
+
+# 全局日期格式化
+spring.jackson.date-format: yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone: Asia/Shanghai
