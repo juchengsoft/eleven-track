@@ -7,7 +7,7 @@ public class ParkingApplyQueryDTO {
     private Long pageNum;
     private Long pageSize;
     private String keyword;
-    private String houseNo;
+    private Integer applyStatus;
     private String beginTime;
     private String endTime;
 }

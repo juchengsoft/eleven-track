@@ -20,4 +20,9 @@ public class GotParkingApply {
     private String remark;
     private LocalDateTime createTime;
     private Integer delFlag;
+    private Integer applyStatus;
+    private Long auditUserId;
+    private String auditUserName;
+    private LocalDateTime auditTime;
+    private String auditRemark;
 }

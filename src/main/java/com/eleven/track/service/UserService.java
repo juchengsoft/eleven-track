@@ -26,6 +26,15 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
     private final GotUserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    private Integer getCurrentUserRole() {
+        Long loginId = StpUtil.getLoginIdAsLong();
+        GotUser user = getById(loginId);
+        if (user == null) {
+            throw new RuntimeException("登录用户不存在");
+        }
+        return user.getRole();
+    }
+
     public GotUser getByUsername(String username) {
         return userMapper.selectByUsername(username);
     }
@@ -62,6 +71,11 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
     }
 
     public void addUser(SysUserSaveDTO dto) {
+        Integer currRole = getCurrentUserRole();
+        if (!currRole.equals(1) && dto.getRole() != null && dto.getRole().equals(1)) {
+            throw new RuntimeException("无权限创建超级管理员");
+        }
+
         long count = count(new LambdaQueryWrapper<GotUser>()
                 .eq(GotUser::getUsername, dto.getUsername()));
         if (count > 0) {
@@ -79,6 +93,15 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
         if (dbUser == null) {
             throw new RuntimeException("用户不存在");
         }
+        Integer currRole = getCurrentUserRole();
+
+        if (!currRole.equals(1) && dbUser.getRole().equals(1)) {
+            throw new RuntimeException("无权限修改超级管理员账号");
+        }
+        if (!currRole.equals(1) && dto.getRole() != null && dto.getRole().equals(1)) {
+            throw new RuntimeException("无权限设置为超级管理员");
+        }
+
         GotUser user = new GotUser();
         BeanUtils.copyProperties(dto, user);
         user.setPassword(null);
@@ -86,6 +109,15 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
     }
 
     public void changeStatus(SysUserStatusDTO dto) {
+        GotUser targetUser = getById(dto.getId());
+        if (targetUser == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        Integer currRole = getCurrentUserRole();
+        if (!currRole.equals(1) && targetUser.getRole().equals(1)) {
+            throw new RuntimeException("无权限操作超级管理员账号");
+        }
+
         GotUser user = new GotUser();
         user.setId(dto.getId());
         user.setStatus(dto.getStatus());
@@ -97,6 +129,11 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
+        Integer currRole = getCurrentUserRole();
+        if (!currRole.equals(1) && user.getRole().equals(1)) {
+            throw new RuntimeException("无权限重置超级管理员密码");
+        }
+
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         updateById(user);
     }
@@ -109,14 +146,14 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
     public void updatePassword(UserPasswordDTO dto) {
         Long userId = StpUtil.getLoginIdAsLong();
         GotUser user = getById(userId);
-        if(user == null){
+        if (user == null) {
             throw new RuntimeException("用户不存在");
         }
         boolean match = passwordEncoder.matches(dto.getOldPassword(), user.getPassword());
-        if(!match){
+        if (!match) {
             throw new RuntimeException("当前密码输入错误");
         }
-        if(dto.getOldPassword().equals(dto.getNewPassword())){
+        if (dto.getOldPassword().equals(dto.getNewPassword())) {
             throw new RuntimeException("新密码不能与旧密码相同");
         }
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));

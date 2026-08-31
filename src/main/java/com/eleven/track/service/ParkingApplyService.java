@@ -1,12 +1,16 @@
 package com.eleven.track.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.eleven.track.dto.ParkingApplyAuditDTO;
 import com.eleven.track.dto.ParkingApplyDTO;
 import com.eleven.track.dto.ParkingApplyQueryDTO;
 import com.eleven.track.entity.GotParkingApply;
+import com.eleven.track.entity.GotUser;
+import com.eleven.track.mapper.GotUserMapper;
 import com.eleven.track.mapper.ParkingApplyMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,6 +28,7 @@ import java.util.UUID;
 public class ParkingApplyService extends ServiceImpl<ParkingApplyMapper, GotParkingApply> {
 
     private final ParkingApplyMapper parkingApplyMapper;
+    private final GotUserMapper userMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public GotParkingApply submit(ParkingApplyDTO dto) {
@@ -45,11 +51,12 @@ public class ParkingApplyService extends ServiceImpl<ParkingApplyMapper, GotPark
         if (StringUtils.hasText(dto.getKeyword())) {
             wrapper.and(w -> w.like(GotParkingApply::getVisitorName, dto.getKeyword())
                     .or().like(GotParkingApply::getVisitorPhone, dto.getKeyword())
+                    .or().like(GotParkingApply::getHouseNo, dto.getKeyword())
                     .or().like(GotParkingApply::getPlateNumber, dto.getKeyword())
             );
         }
-        if (StringUtils.hasText(dto.getHouseNo())) {
-            wrapper.like(GotParkingApply::getHouseNo, dto.getHouseNo());
+        if (dto.getApplyStatus() != null) {
+            wrapper.like(GotParkingApply::getHouseNo, dto.getApplyStatus());
         }
         if (StringUtils.hasText(dto.getBeginTime())) {
             wrapper.ge(GotParkingApply::getCreateTime, dto.getBeginTime());
@@ -61,6 +68,50 @@ public class ParkingApplyService extends ServiceImpl<ParkingApplyMapper, GotPark
 
         return baseMapper.selectPage(page, wrapper);
     }
+
+    public IPage<GotParkingApply> auditQueryPage(Page<GotParkingApply> page, ParkingApplyQueryDTO dto) {
+        LambdaQueryWrapper<GotParkingApply> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(dto.getKeyword())) {
+            wrapper.and(w -> w
+                    .like(GotParkingApply::getVisitorName, dto.getKeyword())
+                    .or().like(GotParkingApply::getVisitorPhone, dto.getKeyword())
+                    .or().like(GotParkingApply::getPlateNumber, dto.getKeyword())
+                    .or().like(GotParkingApply::getHouseNo, dto.getKeyword())
+            );
+        }
+        wrapper.eq(dto.getApplyStatus() != null, GotParkingApply::getApplyStatus, dto.getApplyStatus());
+        if (StringUtils.hasText(dto.getBeginTime())) {
+            wrapper.ge(GotParkingApply::getCreateTime, dto.getBeginTime());
+        }
+        if (StringUtils.hasText(dto.getEndTime())) {
+            wrapper.le(GotParkingApply::getCreateTime, dto.getEndTime() + " 23:59:59");
+        }
+        wrapper.orderByDesc(GotParkingApply::getCreateTime);
+        return baseMapper.selectPage(page, wrapper);
+    }
+
+
+    public void doAudit(ParkingApplyAuditDTO auditDTO) {
+        GotParkingApply apply = this.getById(auditDTO.getId());
+        if (apply == null) {
+            throw new RuntimeException("申请记录不存在");
+        }
+        if (!Integer.valueOf(0).equals(apply.getApplyStatus())) {
+            throw new RuntimeException("该申请不是待审批状态，无法审批");
+        }
+
+        GotParkingApply updateEntity = new GotParkingApply();
+        updateEntity.setId(auditDTO.getId());
+        updateEntity.setApplyStatus(auditDTO.getAuditResult());
+        updateEntity.setAuditRemark(auditDTO.getAuditRemark());
+        updateEntity.setAuditTime(LocalDateTime.now());
+        updateEntity.setAuditUserId(StpUtil.getLoginIdAsLong());
+        GotUser user = userMapper.selectById(StpUtil.getLoginIdAsLong());
+        updateEntity.setAuditUserName(user.getNickName());
+
+        this.updateById(updateEntity);
+    }
+
 
     public void removeApply(Long id) {
         GotParkingApply dbEntity = getById(id);
