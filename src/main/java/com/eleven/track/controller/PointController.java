@@ -1,7 +1,5 @@
 package com.eleven.track.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.eleven.track.dto.PointQueryDTO;
 import com.eleven.track.dto.PointSaveDTO;
@@ -27,25 +25,25 @@ public class PointController {
     }
 
     @PostMapping("/add")
-    public ResultVo<Void> addPoint(@Valid @RequestBody PointSaveDTO dto) {
+    public ResultVo<?> addPoint(@Valid @RequestBody PointSaveDTO dto) {
         pointService.savePoint(dto);
         return ResultVo.success();
     }
 
     @PostMapping("/update")
-    public ResultVo<Void> updatePoint(@Valid @RequestBody PointSaveDTO dto) {
+    public ResultVo<?> updatePoint(@Valid @RequestBody PointSaveDTO dto) {
         pointService.updatePoint(dto);
         return ResultVo.success();
     }
 
-    @PostMapping("/delete")
-    public ResultVo<Void> deletePoint(@RequestBody Long id) {
-        pointService.removePoint(id);
+    @DeleteMapping("/delete/{id}")
+    public ResultVo<?> delete(@PathVariable Long id){
+        pointService.removeById(id);
         return ResultVo.success();
     }
 
     @PostMapping("/changeStatus")
-    public ResultVo<Void> changePointStatus(@Valid @RequestBody PointStatusDTO dto) {
+    public ResultVo<?> changePointStatus(@Valid @RequestBody PointStatusDTO dto) {
         pointService.changeStatus(dto);
         return ResultVo.success();
     }
