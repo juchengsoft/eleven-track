@@ -1,5 +1,6 @@
 package com.eleven.track.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.eleven.track.dto.*;
 import com.eleven.track.entity.GotUser;
@@ -68,6 +69,12 @@ public class UserController {
     public ResultVo<?> updatePassword(@Valid @RequestBody UserPasswordDTO dto){
         userService.updatePassword(dto);
         return ResultVo.success();
+    }
+
+    @SaCheckLogin
+    @GetMapping("/dep")
+    public ResultVo<?> getDepSelect() {
+        return ResultVo.success(userService.getDepSelect());
     }
 
     @PutMapping("/profile")

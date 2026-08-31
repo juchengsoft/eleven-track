@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class NfcCheckInService {
@@ -33,7 +34,11 @@ public class NfcCheckInService {
             vo.setMsg("点位不存在或已停用，请联系管理员");
             return vo;
         }
-
+        if (!Objects.equals(point.getDepId(), dto.getDepId())) {
+            vo.setSuccess(false);
+            vo.setMsg("该点位不属于当前操作部门，禁止操作");
+            return vo;
+        }
         vo.setPointName(point.getPointName());
         vo.setArea(point.getArea());
         vo.setAddress(point.getAddress());

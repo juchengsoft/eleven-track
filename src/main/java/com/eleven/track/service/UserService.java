@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.eleven.track.dto.*;
 import com.eleven.track.entity.GotUser;
+import com.eleven.track.mapper.GotDepartmentMapper;
 import com.eleven.track.mapper.GotUserMapper;
 import com.eleven.track.vo.SelectVO;
 import com.eleven.track.vo.SysUserVO;
@@ -25,6 +26,7 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
 
     private final GotUserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final GotDepartmentMapper departmentMapper;
 
     private Integer getCurrentUserRole() {
         Long loginId = StpUtil.getLoginIdAsLong();
@@ -42,6 +44,12 @@ public class UserService extends ServiceImpl<GotUserMapper, GotUser> {
     public List<SelectVO> getUserSelect() {
         return userMapper.selectList(null).stream()
                 .map(u -> new SelectVO(u.getId(), u.getNickName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<SelectVO> getDepSelect() {
+        return departmentMapper.selectList(null).stream()
+                .map(u -> new SelectVO(u.getId(), u.getDeptName()))
                 .collect(Collectors.toList());
     }
 

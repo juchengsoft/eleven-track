@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 @Data
 public class SysUserVO {
     private Long id;
+    private Long depId;
     private String username;
     private String nickName;
     private String phone;

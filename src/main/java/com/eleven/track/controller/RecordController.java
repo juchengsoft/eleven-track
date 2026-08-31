@@ -1,7 +1,6 @@
 package com.eleven.track.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.eleven.track.dto.RecordQueryDTO;
 import com.eleven.track.entity.GotRecord;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -29,20 +26,6 @@ public class RecordController {
     private final UserService userService;
     private final RecordService recordService;
     private final PointService pointService;
-
-    @SaCheckLogin
-    @PostMapping("/check")
-    public ResultVo<?> checkPoint(@RequestBody GotRecord record) {
-        Long loginUid = StpUtil.getLoginIdAsLong();
-        boolean owner = pointService.checkPointOwner(record.getPointId(), loginUid);
-        if (!owner) {
-            return ResultVo.fail("无权打卡该点位");
-        }
-        record.setUserId(loginUid);
-        record.setCheckTime(LocalDateTime.now());
-        recordService.save(record);
-        return ResultVo.success("打卡成功");
-    }
 
     @SaCheckLogin
     @GetMapping("/list")

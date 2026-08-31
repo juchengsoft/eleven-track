@@ -42,6 +42,7 @@ public class LoginController {
         Map<String, Object> data = new HashMap<>();
         data.put("token", StpUtil.getTokenValue());
         data.put("userId", user.getId());
+        data.put("depId", user.getDepId());
         data.put("username", user.getUsername());
         data.put("nickName", user.getNickName());
         data.put("role", user.getRole());

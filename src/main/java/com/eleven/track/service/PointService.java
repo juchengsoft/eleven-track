@@ -52,7 +52,7 @@ public class PointService extends ServiceImpl<GotPointMapper, GotPoint> {
         entity.setLatitude(dto.getLatitude());
         entity.setAddress(dto.getAddress());
         entity.setNfcLink(dto.getNfcLink());
-        entity.setUserId(dto.getUserId());
+        entity.setDepId(dto.getDepId());
         entity.setSort(dto.getSort() == null ? 0 : dto.getSort());
         entity.setRemark(dto.getRemark());
         entity.setStatus(1);
@@ -70,7 +70,7 @@ public class PointService extends ServiceImpl<GotPointMapper, GotPoint> {
         entity.setLatitude(dto.getLatitude());
         entity.setAddress(dto.getAddress());
         entity.setNfcLink(dto.getNfcLink());
-        entity.setUserId(dto.getUserId());
+        entity.setDepId(dto.getDepId());
         entity.setSort(dto.getSort());
         entity.setRemark(dto.getRemark());
         baseMapper.updateById(entity);
@@ -98,17 +98,5 @@ public class PointService extends ServiceImpl<GotPointMapper, GotPoint> {
         return list.stream()
                 .map(item -> new SelectVO(item.getId(), item.getPointName()))
                 .collect(Collectors.toList());
-    }
-
-    public boolean checkPointOwner(Long pointId, Long uid) {
-        GotPoint point = getById(pointId);
-        if (point == null || point.getDeleted() == 1) {
-            return false;
-        }
-        GotUser loginUser = userService.getById(uid);
-        if (RoleConstant.ADMIN.equals(loginUser.getRole())) {
-            return true;
-        }
-        return point.getUserId() != null && point.getUserId().contains(uid.toString());
     }
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class SysUserSaveDTO {
     private Long id;
+    private Long depId;
 
     @NotBlank(message = "登录账号不能为空")
     private String username;

@@ -17,7 +17,7 @@ public class PointSaveDTO {
     @NotBlank(message = "详细地址不能为空")
     private String address;
     private String nfcLink;
-    private String userId;
+    private Long depId;
     private Integer sort;
     private String remark;
 }

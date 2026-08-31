@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class GotUser {
     @TableId(type = IdType.AUTO)
     private Long id;
+    private Long depId;
     private String username;
     private String password;
     private String nickName;

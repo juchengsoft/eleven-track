@@ -11,11 +11,29 @@
  Target Server Version : 80036 (8.0.36)
  File Encoding         : 65001
 
- Date: 31/08/2026 17:10:26
+ Date: 31/08/2026 21:05:37
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for got_department
+-- ----------------------------
+DROP TABLE IF EXISTS `got_department`;
+CREATE TABLE `got_department` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `dept_name` varchar(100) NOT NULL COMMENT '部门名称',
+  `dept_code` varchar(64) DEFAULT NULL COMMENT '部门编码',
+  `parent_id` bigint DEFAULT '0' COMMENT '父部门ID',
+  `sort` int DEFAULT '0' COMMENT '排序',
+  `status` int DEFAULT '1' COMMENT '状态：0禁用 1启用',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `deleted` int DEFAULT '0' COMMENT '逻辑删除 0未删 1已删',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='部门表';
 
 -- ----------------------------
 -- Table structure for got_parking_apply
@@ -50,13 +68,13 @@ CREATE TABLE `got_parking_apply` (
 DROP TABLE IF EXISTS `got_point`;
 CREATE TABLE `got_point` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '点位ID',
+  `dep_id` bigint NOT NULL COMMENT '部门ID',
   `point_name` varchar(100) NOT NULL COMMENT '点位名称',
   `area` varchar(50) DEFAULT '' COMMENT '所属区域',
   `longitude` decimal(10,6) DEFAULT NULL COMMENT '打卡经度',
   `latitude` decimal(10,6) DEFAULT NULL COMMENT '打卡纬度',
   `address` varchar(200) DEFAULT '' COMMENT '详细地址',
   `nfc_link` varchar(255) NOT NULL COMMENT '该点位专属NFC打卡链接',
-  `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '负责人ID',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '0停用 1正常',
   `remark` varchar(500) DEFAULT '' COMMENT '备注',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -111,7 +129,7 @@ CREATE TABLE `got_record` (
   KEY `idx_point_id` (`point_id`),
   KEY `idx_user_time` (`user_id`,`check_time`),
   KEY `idx_got_record_user_checktime` (`user_id`,`check_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检打卡记录';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检打卡记录';
 
 -- ----------------------------
 -- Table structure for got_user
@@ -119,6 +137,7 @@ CREATE TABLE `got_record` (
 DROP TABLE IF EXISTS `got_user`;
 CREATE TABLE `got_user` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `dep_id` bigint NOT NULL COMMENT '部门ID',
   `username` varchar(50) NOT NULL COMMENT '登录账号',
   `password` varchar(100) NOT NULL COMMENT '加密密码',
   `nick_name` varchar(50) DEFAULT '' COMMENT '姓名',
