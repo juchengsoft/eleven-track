@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class GotPoint {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long depId;
+    private String depIds;
     private String pointId;
     private String pointName;
     private String area;

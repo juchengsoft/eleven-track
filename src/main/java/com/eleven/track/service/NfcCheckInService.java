@@ -8,10 +8,13 @@ import com.eleven.track.mapper.GotRecordMapper;
 import com.eleven.track.vo.NfcCheckInVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class NfcCheckInService {
@@ -34,7 +37,8 @@ public class NfcCheckInService {
             vo.setMsg("点位不存在或已停用，请联系管理员");
             return vo;
         }
-        if (!Objects.equals(point.getDepId(), dto.getDepId())) {
+        String dbDepIds = point.getDepIds();
+        if (!containDep(dbDepIds, dto.getDepId())) {
             vo.setSuccess(false);
             vo.setMsg("该点位不属于当前操作部门，禁止操作");
             return vo;
@@ -91,6 +95,15 @@ public class NfcCheckInService {
         return vo;
     }
 
+    private boolean containDep(String depIdsStr, Long depId){
+        if(!StringUtils.hasText(depIdsStr) || depId == null){
+            return false;
+        }
+        Set<Long> depIdSet = Arrays.stream(depIdsStr.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toSet());
+        return depIdSet.contains(depId);
+    }
 
     private Double calcDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;

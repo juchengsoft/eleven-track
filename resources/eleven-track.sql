@@ -11,7 +11,7 @@
  Target Server Version : 80036 (8.0.36)
  File Encoding         : 65001
 
- Date: 31/08/2026 21:05:37
+ Date: 01/09/2026 21:14:02
 */
 
 SET NAMES utf8mb4;
@@ -68,13 +68,12 @@ CREATE TABLE `got_parking_apply` (
 DROP TABLE IF EXISTS `got_point`;
 CREATE TABLE `got_point` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '点位ID',
-  `dep_id` bigint NOT NULL COMMENT '部门ID',
   `point_name` varchar(100) NOT NULL COMMENT '点位名称',
   `area` varchar(50) DEFAULT '' COMMENT '所属区域',
   `longitude` decimal(10,6) DEFAULT NULL COMMENT '打卡经度',
   `latitude` decimal(10,6) DEFAULT NULL COMMENT '打卡纬度',
   `address` varchar(200) DEFAULT '' COMMENT '详细地址',
-  `nfc_link` varchar(255) NOT NULL COMMENT '该点位专属NFC打卡链接',
+  `nfc_link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '该点位专属NFC打卡链接',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '0停用 1正常',
   `remark` varchar(500) DEFAULT '' COMMENT '备注',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -82,9 +81,10 @@ CREATE TABLE `got_point` (
   `deleted` tinyint DEFAULT '0' COMMENT '逻辑删除',
   `sort` int DEFAULT '0' COMMENT '排序权重',
   `point_id` varchar(64) DEFAULT NULL COMMENT '业务点位编号',
+  `dep_ids` varchar(512) DEFAULT NULL COMMENT '负责部门ID集合，多个用逗号分隔',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_got_point_status_deleted` (`status`,`deleted`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检点位';
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检点位';
 
 -- ----------------------------
 -- Table structure for got_point_daily
@@ -106,7 +106,7 @@ CREATE TABLE `got_point_daily` (
   UNIQUE KEY `uk_pointid_statdate` (`point_id`,`stat_date`),
   KEY `idx_stat_date` (`stat_date`),
   KEY `idx_point_id` (`point_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='点位每日统计表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='点位每日统计表';
 
 -- ----------------------------
 -- Table structure for got_record
@@ -129,7 +129,7 @@ CREATE TABLE `got_record` (
   KEY `idx_point_id` (`point_id`),
   KEY `idx_user_time` (`user_id`,`check_time`),
   KEY `idx_got_record_user_checktime` (`user_id`,`check_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检打卡记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='NFC巡检打卡记录';
 
 -- ----------------------------
 -- Table structure for got_user
@@ -150,6 +150,6 @@ CREATE TABLE `got_user` (
   `deleted` tinyint DEFAULT '0' COMMENT '逻辑删除 0未删 1已删',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统用户';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统用户';
 
 SET FOREIGN_KEY_CHECKS = 1;

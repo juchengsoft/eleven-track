@@ -2,15 +2,12 @@ package com.eleven.track.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.eleven.track.constant.RoleConstant;
 import com.eleven.track.dto.PointQueryDTO;
 import com.eleven.track.dto.PointSaveDTO;
 import com.eleven.track.dto.PointStatusDTO;
 import com.eleven.track.entity.GotPoint;
-import com.eleven.track.entity.GotUser;
 import com.eleven.track.mapper.GotPointMapper;
 import com.eleven.track.vo.SelectVO;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +49,7 @@ public class PointService extends ServiceImpl<GotPointMapper, GotPoint> {
         entity.setLatitude(dto.getLatitude());
         entity.setAddress(dto.getAddress());
         entity.setNfcLink(dto.getNfcLink());
-        entity.setDepId(dto.getDepId());
+        entity.setDepIds(dto.getDepIds());
         entity.setSort(dto.getSort() == null ? 0 : dto.getSort());
         entity.setRemark(dto.getRemark());
         entity.setStatus(1);
@@ -70,7 +67,7 @@ public class PointService extends ServiceImpl<GotPointMapper, GotPoint> {
         entity.setLatitude(dto.getLatitude());
         entity.setAddress(dto.getAddress());
         entity.setNfcLink(dto.getNfcLink());
-        entity.setDepId(dto.getDepId());
+        entity.setDepIds(dto.getDepIds());
         entity.setSort(dto.getSort());
         entity.setRemark(dto.getRemark());
         baseMapper.updateById(entity);
