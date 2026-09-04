@@ -24,4 +24,20 @@
         ORDER BY dt ASC
     </select>
 
+    <select id="selectUserTodayCheckCount" resultType="com.eleven.track.vo.UserCheckCountVO">
+        SELECT
+        u.id AS userId,
+        u.username,
+        u.nick_name AS nickName,
+        COUNT(r.id) AS todayCheckCount
+        FROM got_user u
+        LEFT JOIN got_record r
+        ON u.id = r.user_id
+        AND DATE(r.check_time) = CURDATE()
+        WHERE u.role = 2
+        AND u.deleted = 0
+        GROUP BY u.id, u.username, u.nick_name
+        ORDER BY todayCheckCount DESC
+    </select>
+
 </mapper>

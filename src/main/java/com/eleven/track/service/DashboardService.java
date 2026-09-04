@@ -5,6 +5,7 @@ import com.eleven.track.entity.GotRecord;
 import com.eleven.track.mapper.DashboardMapper;
 import com.eleven.track.vo.DashboardVO;
 import com.eleven.track.vo.DayCountVO;
+import com.eleven.track.vo.UserCheckCountVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,8 @@ public class DashboardService extends ServiceImpl<DashboardMapper, GotRecord> {
         List<DayCountVO> dayList = dashboardMapper.selectExistDayCount();
         List<Integer> trendData = fillLast30Day(dayList);
         vo.setTrendData(trendData);
+        List<UserCheckCountVO> userTodayCheckList = dashboardMapper.selectUserTodayCheckCount();
+        vo.setUserTodayCheckList(userTodayCheckList);
         return vo;
     }
 

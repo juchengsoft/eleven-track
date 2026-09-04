@@ -10,4 +10,6 @@ public class DashboardVO {
     private Long normalUser;
     private Long abnormalCount;
     private List<Integer> trendData;
+    private List<UserCheckCountVO> userTodayCheckList;
+
 }
