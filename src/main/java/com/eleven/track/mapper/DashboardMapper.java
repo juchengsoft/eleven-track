@@ -6,15 +6,16 @@ import com.eleven.track.vo.DashboardVO;
 import com.eleven.track.vo.DayCountVO;
 import com.eleven.track.vo.UserCheckCountVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
 public interface DashboardMapper extends BaseMapper<GotRecord> {
 
-    DashboardVO selectDashboardCard();
+    DashboardVO selectDashboardCard(@Param("queryDate") String queryDate);
 
-    List<DayCountVO> selectExistDayCount();
+    List<DayCountVO> selectExistDayCount(@Param("queryDate") String queryDate);
 
-    List<UserCheckCountVO> selectUserTodayCheckCount();
-
+    List<UserCheckCountVO> selectUserTodayCheckCount(@Param("queryDate") String queryDate);
 }

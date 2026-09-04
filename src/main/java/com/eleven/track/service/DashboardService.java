@@ -21,23 +21,30 @@ public class DashboardService extends ServiceImpl<DashboardMapper, GotRecord> {
 
     private final DashboardMapper dashboardMapper;
 
-    public DashboardVO getDashboardStat() {
-        DashboardVO vo = dashboardMapper.selectDashboardCard();
-        List<DayCountVO> dayList = dashboardMapper.selectExistDayCount();
-        List<Integer> trendData = fillLast30Day(dayList);
+    public DashboardVO getDashboardStat(String queryDate) {
+        LocalDate endDay;
+        try {
+            endDay = LocalDate.parse(queryDate);
+        } catch (Exception e) {
+            endDay = LocalDate.now();
+        }
+        String endDayStr = endDay.toString();
+
+        DashboardVO vo = dashboardMapper.selectDashboardCard(endDayStr);
+        List<DayCountVO> dayList = dashboardMapper.selectExistDayCount(endDayStr);
+        List<Integer> trendData = fillLast30Day(dayList, endDay);
         vo.setTrendData(trendData);
-        List<UserCheckCountVO> userTodayCheckList = dashboardMapper.selectUserTodayCheckCount();
+        List<UserCheckCountVO> userTodayCheckList = dashboardMapper.selectUserTodayCheckCount(endDayStr);
         vo.setUserTodayCheckList(userTodayCheckList);
         return vo;
     }
 
-    private List<Integer> fillLast30Day(List<DayCountVO> dbList) {
+    private List<Integer> fillLast30Day(List<DayCountVO> dbList, LocalDate endDay) {
         Map<LocalDate, Integer> dateMap = dbList.stream()
                 .collect(Collectors.toMap(DayCountVO::getDt, DayCountVO::getCnt));
         List<Integer> result = new ArrayList<>();
-        LocalDate now = LocalDate.now();
         for (int i = 29; i >= 0; i--) {
-            LocalDate targetDay = now.minusDays(i);
+            LocalDate targetDay = endDay.minusDays(i);
             result.add(dateMap.getOrDefault(targetDay, 0));
         }
         return result;

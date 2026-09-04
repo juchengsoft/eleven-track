@@ -5,6 +5,7 @@ import com.eleven.track.vo.ResultVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,7 +15,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/stat")
-    public ResultVo<?> getStat() {
-        return ResultVo.success(dashboardService.getDashboardStat());
+    public ResultVo<?> getStat(@RequestParam(required = false) String queryDate) {
+        return ResultVo.success(dashboardService.getDashboardStat(queryDate));
     }
 }

@@ -5,21 +5,21 @@
     <select id="selectDashboardCard" resultType="com.eleven.track.vo.DashboardVO">
         SELECT
         (SELECT COUNT(*) FROM got_point WHERE deleted = 0) AS totalPoint,
-        (SELECT COUNT(*) FROM got_record WHERE DATE(check_time) = CURDATE()) AS todayCheck,
+        (SELECT COUNT(*) FROM got_record WHERE DATE(check_time) = #{queryDate}) AS todayCheck,
         (SELECT COUNT(*) FROM got_user WHERE status=1 AND role=2 AND deleted=0) AS normalUser,
         (
         SELECT COUNT(*) FROM got_point WHERE deleted = 0
         )
         -
         (
-        SELECT COUNT(DISTINCT point_id) FROM got_record WHERE DATE(check_time) = CURDATE()
+        SELECT COUNT(DISTINCT point_id) FROM got_record WHERE DATE(check_time) = #{queryDate}
         ) AS abnormalCount
     </select>
 
     <select id="selectExistDayCount" resultType="com.eleven.track.vo.DayCountVO">
         SELECT DATE(check_time) AS dt, COUNT(*) AS cnt
         FROM got_record
-        WHERE DATE(check_time) &gt;= DATE_SUB(CURDATE(),INTERVAL 29 DAY)
+        WHERE DATE(check_time) &gt;= DATE_SUB(#{queryDate},INTERVAL 29 DAY)
         GROUP BY DATE(check_time)
         ORDER BY dt ASC
     </select>
@@ -33,7 +33,7 @@
         FROM got_user u
         LEFT JOIN got_record r
         ON u.id = r.user_id
-        AND DATE(r.check_time) = CURDATE()
+        AND DATE(r.check_time) = #{queryDate}
         WHERE u.role = 2
         AND u.deleted = 0
         GROUP BY u.id, u.username, u.nick_name
